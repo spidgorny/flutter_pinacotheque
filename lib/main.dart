@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_advanced_networkimage/provider.dart';
 import 'package:flutter_advanced_networkimage/transition.dart';
 import 'package:flutter_advanced_networkimage/zoomable.dart';
+import 'package:sqljocky5/exceptions/exceptions.dart';
 import 'package:sqljocky5/sqljocky.dart' as sql;
 import 'package:url_launcher/url_launcher.dart';
 
@@ -13,12 +15,16 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setEnabledSystemUIOverlays(
+        [SystemUiOverlay.bottom, SystemUiOverlay.top]);
+//    SystemChrome.restoreSystemUIOverlays();
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
       debugShowCheckedModeBanner: false,
+//      showPerformanceOverlay: true,
       home: MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
@@ -43,10 +49,18 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    this.connectToDB();
+    this.initAsyncState();
+  }
+
+  void initAsyncState() async {
+    await this.connectToDB();
+    this.getRandomPic();
+    _timer = new Timer.periodic(
+        this.refreshDuration, (Timer timer) => this.getRandomPic());
   }
 
   Future connectToDB() async {
+    print('Reconnect...');
     var settings = new sql.ConnectionSettings(
         host: '192.168.1.109',
         port: 3306,
@@ -54,23 +68,30 @@ class _MyHomePageState extends State<MyHomePage> {
         password: '123',
         db: 'pina');
     this.db = await sql.MySqlConnection.connect(settings);
-    this.getRandomPic();
-    _timer = new Timer.periodic(
-        this.refreshDuration, (Timer timer) => this.getRandomPic());
+    print('Connected.');
   }
 
   void getRandomPic() async {
-    var results = await this.db.prepared(
-        "select * from files where type = 'file' order by rand() limit 1", []);
-    results.forEach((sql.Row row) {
-      // Access columns by index
-      print('Row: ${row}');
-      // Access columns by name
-//      print('Name: ${row.id}, email: ${row.path}');
-      setState(() {
-        this.row = row;
+    try {
+      var results = await this.db.prepared(
+          "select * from files where type = 'file' order by rand() limit 1",
+          []);
+      results.forEach((sql.Row row) {
+        // Access columns by index
+        print('Row: ${row}');
+        // Access columns by name
+        //      print('Name: ${row.id}, email: ${row.path}');
+        setState(() {
+          this.row = row;
+        });
       });
-    });
+    } catch (e) {
+      if (e is MySqlClientError) {
+        print(e);
+        await this.connectToDB();
+        this.getRandomPic();
+      }
+    }
   }
 
   int get file {
@@ -117,9 +138,12 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-//      appBar: AppBar(
-//        title: Text(widget.title),
-//      ),
+      appBar: AppBar(
+        toolbarOpacity: 1,
+        title: Text(this.row != null
+            ? this.dateTime.toIso8601String().replaceAll('T', ' ')
+            : 'Loading...'),
+      ),
       body: Center(
         child: this.row != null
             ? GestureDetector(
@@ -142,14 +166,15 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Container imageAsBackground(String url, {String thumbURL, Widget child}) {
+  Container imageAsBackground(String url,
+      {String thumbURL, Widget child, BoxFit fit}) {
     return Container(
       decoration: BoxDecoration(
         image: DecorationImage(
           image: NetworkImage(
             url,
           ),
-          fit: BoxFit.cover,
+          fit: fit != null ? fit : BoxFit.cover,
         ),
       ),
       child: child ?? Container(),
@@ -157,7 +182,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   imageAsDoubleBackground(String url, {String thumbURL}) {
-    return imageAsBackground(thumbURL, child: imageAsBackground(url));
+    return imageAsBackground(thumbURL,
+        child: imageAsBackground(url, fit: BoxFit.contain));
   }
 
   imageAsAdvanced(String url, {String thumbURL}) {
