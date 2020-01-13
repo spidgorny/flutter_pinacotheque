@@ -5,9 +5,10 @@ import 'package:flutter/services.dart';
 import 'package:sqljocky5/sqljocky.dart' as sql;
 import 'package:url_launcher/url_launcher.dart';
 
+import 'IImage.dart';
+import 'IImageProvider.dart';
 import 'ImageWithBackground.dart';
-import 'MyImage.dart';
-import 'MyImageProvider.dart';
+import 'TestImageProvider.dart';
 
 void main() => runApp(MyApp());
 
@@ -42,8 +43,9 @@ class _MyHomePageState extends State<MyHomePage> {
   Timer _timer;
   String baseURL = 'http://192.168.1.109:81/';
   Duration refreshDuration = Duration(seconds: 15);
-  MyImageProvider provider = new MyImageProvider();
-  MyImage image;
+//  IImageProvider provider = new MyImageProvider();
+  IImageProvider provider = new TestImageProvider();
+  IImage image;
 
   @override
   void initState() {
@@ -61,6 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
     var image = await this.provider.getRandomPic();
     setState(() {
       this.image = image;
+      this.image.setBaseURL(this.baseURL);
     });
   }
 
@@ -81,12 +84,11 @@ class _MyHomePageState extends State<MyHomePage> {
         child: this.image != null
             ? GestureDetector(
                 child: ImageWithBackground(
-                  this.baseURL + 'ShowOriginal?file=${this.image.file}',
-                  thumbURL: this.baseURL + 'ShowThumb?file=${this.image.file}',
+                  this.image.imageURL,
+                  thumbURL: image.thumbURL,
                 ),
                 onTap: () {
-                  launch(baseURL +
-                      'Preview?source=0&year=${this.image.year}&month=${this.image.month}&file=${this.image.file}');
+                  launch(this.image.clickURL);
                 },
               )
             : CircularProgressIndicator(),

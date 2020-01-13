@@ -1,9 +1,10 @@
 import 'package:sqljocky5/exceptions/exceptions.dart';
 import 'package:sqljocky5/sqljocky.dart' as sql;
 
+import 'IImageProvider.dart';
 import 'MyImage.dart';
 
-class MyImageProvider {
+class MyImageProvider implements IImageProvider {
   sql.MySqlConnection db;
 
   MyImageProvider() {
@@ -32,7 +33,8 @@ class MyImageProvider {
         print('Row: ${row}');
         // Access columns by name
         //      print('Name: ${row.id}, email: ${row.path}');
-        return new MyImage(row);
+        return new MyImage(
+            row.byName('id'), row.byName('DateTime'), row.byName('timestamp'));
       }
     } catch (e) {
       if (e is MySqlClientError) {

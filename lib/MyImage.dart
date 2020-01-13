@@ -1,34 +1,34 @@
-import 'package:sqljocky5/sqljocky.dart' as sql;
+import 'dart:core';
 
-class MyImage {
-  sql.Row row;
+import 'IImage.dart';
 
-  MyImage(sql.Row row) {
-    this.row = row;
-  }
+class MyImage extends IImage {
+  int id;
+  String sDateTime;
+  double timestamp;
+
+  MyImage(this.id, this.sDateTime, this.timestamp);
 
   int get file {
-    return this.row.byName('id');
+    return this.id;
   }
 
   DateTime get dateTime {
-    String sDateTime = this.row.byName('DateTime');
-    print(sDateTime);
-    double dTimestamp = this.row.byName('timestamp');
-
     DateTime dateTime;
-    if (sDateTime != null) {
+    if (this.sDateTime != null) {
       try {
-        var parts = sDateTime.split(' ');
+        var parts = this.sDateTime.split(' ');
         String date = parts[0];
         String time = parts[1];
         date = date.replaceAll(':', '-');
         dateTime = DateTime.parse(date + ' ' + time);
       } catch (e) {
-        dateTime = new DateTime.fromMillisecondsSinceEpoch(dTimestamp.floor());
+        dateTime =
+            new DateTime.fromMillisecondsSinceEpoch(this.timestamp.floor());
       }
     } else {
-      dateTime = new DateTime.fromMillisecondsSinceEpoch(dTimestamp.floor());
+      dateTime =
+          new DateTime.fromMillisecondsSinceEpoch(this.timestamp.floor());
     }
     print(dateTime);
     return dateTime;
@@ -46,5 +46,18 @@ class MyImage {
 
   String get humanTime {
     return this.dateTime.toIso8601String().replaceAll('T', ' ');
+  }
+
+  String get imageURL {
+    return this.baseURL + 'ShowOriginal?file=${this.file}';
+  }
+
+  String get thumbURL {
+    return this.baseURL + 'ShowThumb?file=${this.file}';
+  }
+
+  String get clickURL {
+    return baseURL +
+        'Preview?source=0&year=${this.year}&month=${this.month}&file=${this.file}';
   }
 }
