@@ -2,7 +2,7 @@ import 'IImage.dart';
 
 class TestImage extends IImage {
   int id;
-  String DateTime;
+  String DateTime; // ignore: non_constant_identifier_names
   double timestamp;
 
   TestImage(this.id, this.DateTime, this.timestamp);

@@ -26,6 +26,7 @@ dependencies:
   sqljocky5: ^2.2.1
   url_launcher: ^5.4.1
   flutter_advanced_networkimage: ^0.6.2
+  connectivity: ^0.4.6+2
 
 dev_dependencies:
   flutter_test:

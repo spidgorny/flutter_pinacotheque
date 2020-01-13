@@ -30,7 +30,7 @@ class MyImageProvider implements IImageProvider {
           []);
       await for (var row in results) {
         // Access columns by index
-        print('Row: ${row}');
+        print('Row: $row');
         // Access columns by name
         //      print('Name: ${row.id}, email: ${row.path}');
         return new MyImage(
@@ -40,8 +40,8 @@ class MyImageProvider implements IImageProvider {
       if (e is MySqlClientError) {
         print(e);
         await this.connectToDB();
-        return this.getRandomPic();
       }
     }
+    return this.getRandomPic();
   }
 }

@@ -4,9 +4,9 @@ import 'package:flutter_advanced_networkimage/transition.dart';
 import 'package:flutter_advanced_networkimage/zoomable.dart';
 
 class ImageWithBackground extends StatelessWidget {
-  String url;
-  String thumbURL;
-  Duration refreshDuration;
+  final String url;
+  final String thumbURL;
+  final Duration refreshDuration;
 
   ImageWithBackground(this.url, {this.thumbURL, this.refreshDuration});
 

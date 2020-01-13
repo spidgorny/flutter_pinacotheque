@@ -5,11 +5,11 @@ abstract class IImage {
     this.baseURL = url;
   }
 
-  String get humanTime {}
+  String get humanTime;
 
-  String get imageURL {}
+  String get imageURL;
 
-  String get thumbURL {}
+  String get thumbURL;
 
-  String get clickURL {}
+  String get clickURL;
 }

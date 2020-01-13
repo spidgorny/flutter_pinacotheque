@@ -1,5 +1,5 @@
 import 'IImage.dart';
 
 abstract class IImageProvider {
-  Future<IImage> getRandomPic() async {}
+  Future<IImage> getRandomPic();
 }

@@ -30,7 +30,7 @@ class MyImage extends IImage {
       dateTime =
           new DateTime.fromMillisecondsSinceEpoch(this.timestamp.floor());
     }
-    print(dateTime);
+//    print(dateTime);
     return dateTime;
   }
 
