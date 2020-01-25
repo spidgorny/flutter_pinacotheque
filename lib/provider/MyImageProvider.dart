@@ -1,8 +1,8 @@
 import 'package:sqljocky5/exceptions/exceptions.dart';
 import 'package:sqljocky5/sqljocky.dart' as sql;
 
+import '../image/MyImage.dart';
 import 'IImageProvider.dart';
-import 'MyImage.dart';
 
 class MyImageProvider implements IImageProvider {
   sql.MySqlConnection db;

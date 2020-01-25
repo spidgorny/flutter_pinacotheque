@@ -1,5 +1,5 @@
+import '../image/TestImage.dart';
 import 'IImageProvider.dart';
-import 'TestImage.dart';
 
 class TestImageProvider implements IImageProvider {
   Future<TestImage> getRandomPic() async =>

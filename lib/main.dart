@@ -3,14 +3,13 @@ import 'dart:async';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:sqljocky5/sqljocky.dart' as sql;
 import 'package:url_launcher/url_launcher.dart';
 
-import 'IImage.dart';
-import 'IImageProvider.dart';
 import 'ImageWithBackground.dart';
-import 'MyImageProvider.dart';
-import 'TestImageProvider.dart';
+import 'image/IImage.dart';
+import 'provider/HttpImageProvider.dart';
+import 'provider/IImageProvider.dart';
+import 'provider/TestImageProvider.dart';
 
 void main() => runApp(MyApp());
 
@@ -41,10 +40,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  sql.MySqlConnection db;
+//  sql.MySqlConnection db;
   Timer _timer;
   Timer _timerTillRefresh;
-  String baseURL = 'http://192.168.1.109:81/';
+  String baseURL = 'http://192.168.1.120/';
   Duration refreshDuration = Duration(seconds: 15);
 //  IImageProvider provider = new MyImageProvider();
   IImageProvider provider;
@@ -71,7 +70,8 @@ class _MyHomePageState extends State<MyHomePage> {
     var connectivityResult = await (Connectivity().checkConnectivity());
     print(connectivityResult);
     if (connectivityResult == ConnectivityResult.wifi) {
-      return new MyImageProvider();
+//      return new MyImageProvider();
+      return new HttpImageProvider(baseURL);
     }
     return new TestImageProvider();
   }
